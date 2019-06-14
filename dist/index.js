@@ -405,18 +405,21 @@ export default class VideoPlayer extends React.Component {
         NetInfo.isConnected.removeEventListener('connectionChange', this.handleConnectivityChange);
     }
     render() {
+        const { playIcon: PlayIconElem, pauseIcon: PauseIconElem, spinner: SpinnerElem, fullscreenEnterIcon: FullscreenEnterIconElem, fullscreenExitIcon: FullscreenExitIconElem, replayIcon: ReplayIconElem, switchToLandscape, switchToPortrait, isPortrait, sliderColor, iosThumbImage, iosTrackImage, showFullscreenButton, textStyle, videoProps } = getProps(this.props);
+        // Do not let the user override `ref`, `callback`, and `style`
+        const { ref, style, onPlaybackStatusUpdate, source } = videoProps, otherVideoProps = tslib_1.__rest(videoProps, ["ref", "style", "onPlaybackStatusUpdate", "source"]);
+        const propWidth = style ? style.width ? style.width : null : null;
+        const propHeight = style ? style.height ? style.height : null : null;
         const { width: maxWidth, height: maxHeight } = Dimensions.get('window');
         const centeredContentWidth = 60;
         const screenRatio = maxWidth / maxHeight;
-        let videoHeight = maxHeight;
-        let videoWidth = videoHeight * screenRatio;
+        const wideRatio = (16 / 9);
+        let videoHeight = propHeight ? propHeight : maxWidth / wideRatio;
+        let videoWidth = propWidth ? propWidth : videoHeight * wideRatio;
         if (videoWidth > maxWidth) {
             videoWidth = maxWidth;
             videoHeight = videoWidth / screenRatio;
         }
-        const { playIcon: PlayIconElem, pauseIcon: PauseIconElem, spinner: SpinnerElem, fullscreenEnterIcon: FullscreenEnterIconElem, fullscreenExitIcon: FullscreenExitIconElem, replayIcon: ReplayIconElem, switchToLandscape, switchToPortrait, isPortrait, sliderColor, iosThumbImage, iosTrackImage, showFullscreenButton, textStyle, videoProps } = getProps(this.props);
-        // Do not let the user override `ref`, `callback`, and `style`
-        const { ref, style, onPlaybackStatusUpdate, source } = videoProps, otherVideoProps = tslib_1.__rest(videoProps, ["ref", "style", "onPlaybackStatusUpdate", "source"]);
         const Control = (_a) => {
             var { callback, center, children, transparent = false } = _a, otherProps = tslib_1.__rest(_a, ["callback", "center", "children", "transparent"]);
             return (<TouchableOpacity {...otherProps} hitSlop={{ top: 20, left: 20, bottom: 20, right: 20 }} onPress={() => {
@@ -463,8 +466,8 @@ export default class VideoPlayer extends React.Component {
           {text}
         </Text>
       </View>);
-        return (<TouchableWithoutFeedback onPress={this.toggleControls}>
-        <View style={{ backgroundColor: 'black' }}>
+        return (<TouchableWithoutFeedback onPress={this.toggleControls} style={{ height: videoHeight }}>
+        <View style={{ backgroundColor: 'black', height: videoHeight }}>
           <Video source={source} ref={component => {
             this.playbackInstance = component;
             ref && ref(component);

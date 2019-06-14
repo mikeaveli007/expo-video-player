@@ -548,19 +548,7 @@ export default class VideoPlayer extends React.Component<Props, State> {
   }
 
   render() {
-    const {width: maxWidth, height: maxHeight} = Dimensions.get('window')
-    const centeredContentWidth = 60
-    const screenRatio = maxWidth / maxHeight
-
-    let videoHeight = maxHeight
-    let videoWidth = videoHeight * screenRatio
-
-    if (videoWidth > maxWidth) {
-      videoWidth = maxWidth
-      videoHeight = videoWidth / screenRatio
-    }
-
-    const {
+	const {
       playIcon: PlayIconElem,
       pauseIcon: PauseIconElem,
       spinner: SpinnerElem,
@@ -577,8 +565,7 @@ export default class VideoPlayer extends React.Component<Props, State> {
       textStyle,
       videoProps
     } = getProps(this.props)
-
-    // Do not let the user override `ref`, `callback`, and `style`
+	// Do not let the user override `ref`, `callback`, and `style`
     const {
       ref,
       style,
@@ -586,6 +573,20 @@ export default class VideoPlayer extends React.Component<Props, State> {
       source,
       ...otherVideoProps
     } = videoProps
+	const propWidth = style ? style.width ? style.width : null : null
+	const propHeight = style ? style.height ? style.height : null : null
+    const {width: maxWidth, height: maxHeight} = Dimensions.get('window')
+    const centeredContentWidth = 60
+    const screenRatio = maxWidth / maxHeight
+	const wideRatio = (16/9);
+
+    let videoHeight = propHeight ? propHeight : maxWidth / wideRatio;
+    let videoWidth = propWidth ? propWidth : videoHeight * wideRatio
+
+    if (videoWidth > maxWidth) {
+      videoWidth = maxWidth
+      videoHeight = videoWidth / screenRatio
+    }
 
 
     const Control = (
@@ -663,9 +664,9 @@ export default class VideoPlayer extends React.Component<Props, State> {
     )
 
     return (
-      <TouchableWithoutFeedback onPress={this.toggleControls}>
+      <TouchableWithoutFeedback onPress={this.toggleControls} style={{height: videoHeight}}>
         <View
-          style={{backgroundColor: 'black'}}>
+          style={{backgroundColor: 'black', height: videoHeight}}>
           <Video
             source={source}
             ref={component => {
